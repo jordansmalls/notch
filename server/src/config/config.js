@@ -2,7 +2,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const corsOptions = {
-  //TODO: configure cors
+  //TODO: update for prod frontend url
+  origin:
+    process.env.NODE_ENV === "production"
+      ? "https://your-app.com"
+      : "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 const config = {
