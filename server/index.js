@@ -5,7 +5,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import users from "./src/routes/user.routes.js";
+import connectDB from "./src/config/db.js"
 
+connectDB();
 const app = express();
 
 app.use(morgan(config.node_env === "production" ? "combined" : "dev"));
