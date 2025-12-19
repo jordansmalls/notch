@@ -1,7 +1,5 @@
 import { Tally5 } from "lucide-react"
-
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldDescription,
@@ -57,7 +55,7 @@ export function SignupForm({
   useEffect(() => {
     if(email.length < 7) {
       setEmailStatus({
-        message: "Please enter a valid email.",
+        message: "please enter a valid email.",
         isAvailable: null
       });
       return;
@@ -156,7 +154,7 @@ export function SignupForm({
 
           {/* email input */}
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">email</FieldLabel>
             <Input
               id="email"
               type="email"
@@ -182,7 +180,7 @@ export function SignupForm({
 
           {/* password input */}
           <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <FieldLabel htmlFor="password">password</FieldLabel>
             <Input
               id="password"
               type="password"
@@ -201,7 +199,7 @@ export function SignupForm({
         </FieldGroup>
       </form>
       <FieldDescription className="text-center">
-              Already have an account? <Link to="/login">Login</Link>
+              Already have an account? <Link to="/login" className="transition ease-in hover:text-primary duration-200">Login</Link>
       </FieldDescription>
     </div>
   )

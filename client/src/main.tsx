@@ -13,6 +13,7 @@ import Login from "./pages/auth/login.tsx";
 import Signup from "./pages/auth/signup.tsx";
 import NotFound from "./pages/def/not-found.tsx";
 import Dashboard from "./pages/dashboard.tsx";
+import Settings from "./pages/settings.tsx";
 import PrivateRoute from "./components/private-route.tsx";
 
 
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
 
       <Route path="" element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
 
     </Route>
