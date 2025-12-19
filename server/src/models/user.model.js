@@ -29,8 +29,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// index for better query performance
-userSchema.index({ email: 1 });
 
 // compare password hash
 userSchema.methods.matchPassword = async function (enteredPassword) {
