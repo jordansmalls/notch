@@ -12,6 +12,7 @@ const app = express();
 
 app.use(morgan(config.node_env === "production" ? "combined" : "dev"));
 app.use(compression());
+app.use(express.json());
 app.use(cookieParser());
 app.use(cors(config.cors_options))
 

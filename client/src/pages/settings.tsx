@@ -2,8 +2,10 @@ import { AppSidebar } from "../components/sidebar/app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "../components/ui/breadcrumb"
 import { Separator } from "../components/ui/separator";
 import {
@@ -12,7 +14,7 @@ import {
   SidebarTrigger,
 } from "../components/ui/sidebar"
 
-const Dashboard = () => {
+const Settings = () => {
     return (
         <>
         <SidebarProvider>
@@ -27,8 +29,14 @@ const Dashboard = () => {
             />
             <Breadcrumb>
               <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/dashboard">
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage>Settings</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -48,4 +56,4 @@ const Dashboard = () => {
      );
 }
 
-export default Dashboard;
+export default Settings;
