@@ -50,3 +50,36 @@ export const emailCheckLimiter = rateLimit({
     message: "Too many email availability checks. Please wait and try again.",
   },
 });
+
+
+/**
+ * @description Increment limiter (public incrementing)
+ * @purpose Prevents script-spamming a counter's count.
+ */
+export const incrementLimiter = rateLimit({
+  // 10 seconds
+  windowMs: 10 * 1000,
+  // Limit each IP to 30 requests per 10 seconds
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too fast! Please slow down.",
+  },
+});
+
+/**
+ * @description Counter read limiter (public fetching)
+ * @purpose Prevents aggressive scraping of counter data.
+ */
+export const counterReadLimiter = rateLimit({
+  // 1 minute
+  windowMs: 60 * 1000,
+  // Limit each IP to 60 requests per minute
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too many requests to view this counter. Please try again in a minute.",
+  },
+});

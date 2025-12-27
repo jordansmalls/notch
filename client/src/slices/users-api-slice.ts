@@ -1,5 +1,6 @@
 import { apiSlice } from "./api-slice";
 import { API_BASE_URL } from '../utils/api-config';
+import { logout } from "./auth-slice";
 
 
 // const USERS = `${API_BASE_URL}/api/users`
@@ -28,6 +29,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 url: `${USERS}/logout`,
                 method: "POST",
             }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(logout())
+                } catch (err) {
+                    console.error("Logout failed:", err);
+                }
+            }
         }),
         fetchUserAccount: builder.mutation({
             query: (data) => ({
@@ -56,9 +65,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 method: "GET",
             }),
         }),
+        deleteUserAccount: builder.mutation({
+            query: () => ({
+                url: `${USERS}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ['User'],
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(logout())
+                } catch (err) {
+                    console.error("Account deletion/cleanup failed:", err)
+                }
+            }
+        })
     })
 })
-
 
 export const {
     useSignupMutation,
@@ -68,4 +91,5 @@ export const {
     useDeactivateUserAccountMutation,
     useCheckEmailAvailabilityMutation,
     useFetchUserAccountMutation,
+    useDeleteUserAccountMutation,
 } = userApiSlice;

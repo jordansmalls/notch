@@ -24,7 +24,6 @@ export function SignupForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  // State to manage the availability feedback
     const [emailStatus, setEmailStatus] = useState<{
     message: string | React.ReactNode;
     isAvailable: boolean | null;
@@ -38,7 +37,6 @@ export function SignupForm({
 
   const [signup, { isLoading: isSigningUp }] = useSignupMutation();
 
-  // Init the check mutation and rename its loading state
   const [checkEmail, { isLoading: isChecking }] = useCheckEmailAvailabilityMutation();
 
 

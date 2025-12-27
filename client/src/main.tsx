@@ -15,6 +15,8 @@ import NotFound from "./pages/def/not-found.tsx";
 import Dashboard from "./pages/dashboard.tsx";
 import Settings from "./pages/settings.tsx";
 import PrivateRoute from "./components/private-route.tsx";
+import Docs from "./pages/docs.tsx";
+import CreateCounter from "./pages/counters/create-counter.tsx";
 
 
 const router = createBrowserRouter(
@@ -28,6 +30,9 @@ const router = createBrowserRouter(
       <Route path="" element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/docs" element={<Docs />} />
+        <Route path="/create-counter" element={<CreateCounter />} />
+
       </Route>
 
     </Route>

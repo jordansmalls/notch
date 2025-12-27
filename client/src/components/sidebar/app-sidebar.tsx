@@ -4,14 +4,18 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
-  Frame,
   LifeBuoy,
   Map,
   PieChart,
   Send,
   Settings2,
   SquareTerminal,
-  Tally5
+  Plus,
+  Tally5,
+  Warehouse,
+  Settings,
+  Eye,
+  Github
 } from "lucide-react"
 
 
@@ -124,31 +128,36 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
+      title: "Contribute to Project",
+      url: "https://www.github.com/jordansmalls/notch",
+      icon: Github,
     },
     {
       title: "Feedback",
-      url: "#",
+      url: "https://www.x.com/@jsmallsdev",
       icon: Send,
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Dashboard",
+      url: "/dashboard",
+      icon: Warehouse,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "Create New Counter",
+      url: "/create-counter",
+      icon: Plus,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Documentation",
+      url: "/docs",
+      icon: BookOpen,
+    },
+    {
+      name: "Settings",
+      url: "/settings",
+      icon: Settings,
     },
   ],
 }
@@ -174,7 +183,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        {/* <NavMain items={data.navMain} /> */}
         <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

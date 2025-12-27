@@ -7,6 +7,7 @@ import {
   deactivateUserAccount,
   fetchUserAccount,
   changeAccountPassword,
+  deleteUserAccount,
 } from "../controllers/user.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import {
@@ -60,5 +61,13 @@ router.get("/me", lightLimiter, protect, fetchUserAccount);
  * @access  PRIVATE
  */
 router.put("/", strictLimiter, protect, changeAccountPassword);
+
+
+/**
+ * @desc    Delete User Account
+ * @route   DELETE /api/users/
+ * @access  PRIVATE
+ */
+router.delete("/", protect, deleteUserAccount)
 
 export default router;

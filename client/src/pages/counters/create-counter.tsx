@@ -1,4 +1,8 @@
-import { AppSidebar } from "../components/sidebar/app-sidebar"
+import { Tally5 } from "lucide-react"
+
+
+import { CreateCounterForm } from "../../components/forms/create-counter-form";
+import { AppSidebar } from "../../components/sidebar/app-sidebar"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,18 +10,15 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "../components/ui/breadcrumb"
-import { Separator } from "../components/ui/separator";
+} from "../../components/ui/breadcrumb"
+import { Separator } from "../../components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "../components/ui/sidebar"
+} from "../../components/ui/sidebar"
 
-
-import { SettingsForm } from "../components/forms/settings-form";
-
-const Settings = () => {
+const CreateCounter = () => {
     return (
         <>
         <SidebarProvider>
@@ -39,18 +40,25 @@ const Settings = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Settings</BreadcrumbPage>
+                  <BreadcrumbPage>Create Counter</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            </div>
+          </div>
         </header>
 
-        <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <SettingsForm />
+            <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <a href="#" className="flex items-center gap-2 self-center font-medium">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <Tally5 className="size-4" />
+          </div>
+        </a>
+        <CreateCounterForm />
       </div>
     </div>
+
+
 
             </SidebarInset>
         </SidebarProvider>
@@ -58,4 +66,4 @@ const Settings = () => {
      );
 }
 
-export default Settings;
+export default CreateCounter;

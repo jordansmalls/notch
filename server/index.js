@@ -5,6 +5,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import users from "./src/routes/user.routes.js";
+import counters from "./src/routes/counter.routes.js"
+import global from "./src/routes/global.routes.js"
 import connectDB from "./src/config/db.js"
 
 connectDB();
@@ -15,8 +17,13 @@ app.use(compression());
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(config.cors_options))
+// TODO: will need this in prod with hosting on railway
+// app.set("trust proxy", 1)
+
 
 app.use("/api/users", users);
+app.use("/api/counters", counters);
+app.use("/api/global", global)
 
 app.get("/", (req, res) => res.send("API is live"));
 

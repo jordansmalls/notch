@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import generateToken from "../utils/generate.jwt.js";
+import { trackNewUser } from "../utils/global.utils.js"
 
 /**
  * @desc    Create user account
@@ -40,6 +41,8 @@ export const createUserAccount = async (req, res) => {
           "We're having trouble creating your account, please try again.",
       });
     } else {
+      // increment global user count
+      trackNewUser()
       // login user with JWT on successful account creation
       generateToken(res, user._id);
       return res.status(201).json({
@@ -311,3 +314,36 @@ export const changeAccountPassword = async (req, res) => {
     });
   }
 };
+
+
+
+/**
+ * @desc    Delete User Account
+ * @route   DELETE /api/users/
+ * @access  PRIVATE
+ */
+
+export const deleteUserAccount = async (req, res) => {
+  const id = req.user?._id;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ message: "Invalid credentials (ID missing)." });
+  }
+
+  try {
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if(!deletedUser) {
+      return res.status(404).json({ message: "User not found." })
+    }
+
+    return res.status(200).json({ message: "Account deletion successful. Please come back soon." })
+
+  } catch (err) {
+   console.log("There was an error attempting to delete a user account:", err);
+   return res.status(500).json({ message: "We're having trouble deleting your account, please try again later." })
+  }
+}

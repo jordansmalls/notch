@@ -4,7 +4,10 @@ import {
   ChevronsUpDown,
   LogOut,
   Sparkles,
-  Settings
+  Settings,
+  Moon,
+  Sun,
+  Monitor
 } from "lucide-react"
 
 import {
@@ -20,6 +23,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
@@ -34,6 +41,7 @@ import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useLogoutMutation } from "../../slices/users-api-slice"
 import { logout as logoutAction } from "../../slices/auth-slice"
+import { useTheme } from "../theme/theme-provider"
 
 export function NavUser({
   user,
@@ -45,49 +53,28 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { setTheme } = useTheme()
+  const { userInfo } = useSelector((state: any) => state.auth)
 
-  const { userInfo } = useSelector((state) => state.auth)
-
-  // func to extract user's email before the @
-  const getEmailName = function(email: string) {
-    let res = "";
-    for(let i = 0; i < email.length; ++i) {
-      const curr = email[i];
-
-      if(curr !== "@") {
-        res += curr
-      } else {
-        break;
-      }
-    };
-    return res;
+  const getEmailName = (email: string) => {
+    return email.split("@")[0]
   }
 
   const emailName = getEmailName(userInfo.email)
-
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [logoutApiCall] = useLogoutMutation()
 
-  const [logoutApiCall, { isLoading }] = useLogoutMutation();
-
-  // Logout Handler
   const logoutHandler = async () => {
     try {
       await logoutApiCall().unwrap()
       dispatch(logoutAction())
       navigate("/login")
-      toast.success("Logged out successfully.", { description: "We'll see you soon, right?" })
+      toast.success("Logged out successfully.")
     } catch (err) {
-      console.error("Logout error:", err)
-      toast.error("Oops!", { description: "We're having trouble logging you out, please try again. "})
+      toast.error("Oops!", { description: "We're having trouble logging you out." })
     }
   }
-
-  // Settings Handler
-  const settingsHandler = () => {
-    navigate("/settings")
-  }
-
 
   return (
     <SidebarMenu>
@@ -100,7 +87,7 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">{emailName.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{emailName.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{emailName}</span>
@@ -119,7 +106,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">{emailName.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{emailName.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{emailName}</span>
@@ -130,19 +117,45 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem disabled>
-                <Sparkles />
+                <Sparkles className="mr-2 h-4 w-4" />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={settingsHandler}>
-                <Settings />
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <Settings className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
+
+              {/* Theme Toggle Submenu */}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Sun className="mr-2 h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute mr-2 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span>Theme</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem onClick={() => setTheme("light")}>
+                      <Sun className="mr-2 h-4 w-4" />
+                      <span>Light</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("dark")}>
+                      <Moon className="mr-2 h-4 w-4" />
+                      <span>Dark</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("system")}>
+                      <Monitor className="mr-2 h-4 w-4" />
+                      <span>System</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logoutHandler}>
-              <LogOut />
+              <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
