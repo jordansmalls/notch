@@ -142,13 +142,13 @@ const Docs = () => {
 
             <div className="flex items-center gap-3 font-mono text-sm bg-muted p-3 rounded-md border border-orange-100">
               <span className="font-bold text-orange-600">POST</span>
-              <span className="text-muted-foreground truncate">{BASE_URL}/api/counters/public/:public_key/increment</span>
+              <span className="text-muted-foreground truncate">{BASE_URL}/api/counters/public/:public_key</span>
             </div>
 
             <div className="flex flex-col gap-2">
               <CodeBlock
                 label="Request Example"
-                code={`fetch("${BASE_URL}/api/counters/public/${SAMPLE_KEY}/increment", {\n  method: "POST"\n})`}
+                code={`fetch("${BASE_URL}/api/counters/public/${SAMPLE_KEY}", {\n  method: "POST"\n})`}
               />
               <CodeBlock
                 variant="success"
