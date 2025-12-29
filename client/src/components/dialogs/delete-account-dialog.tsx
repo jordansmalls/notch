@@ -19,8 +19,6 @@ import { Button } from "@/components/ui/button"
 
 export function DeleteAccountDialog() {
 
-  const { userInfo } = useSelector((state) => state.auth)
-  console.log(userInfo)
   const [deleteAccount, { isLoading }] = useDeleteUserAccountMutation();
 
   const handleSubmit = async () => {
