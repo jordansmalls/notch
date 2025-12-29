@@ -2,7 +2,6 @@
 
 import {
   Folder,
-  MoreHorizontal,
   Share,
   Trash2,
   type LucideIcon,
@@ -19,13 +18,10 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
-import { ModeToggle } from "../theme/mode-toggle"
 
 export function NavProjects({
   projects,

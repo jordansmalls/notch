@@ -101,7 +101,6 @@ export function SettingsForm({
               required
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              // Optional: turn border red if user typed but length is short
               className={cn(newPassword.length > 0 && !isLengthValid && "border-destructive focus-visible:ring-destructive")}
             />
           </Field>

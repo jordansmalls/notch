@@ -83,7 +83,7 @@ const Data = () => {
 
 //   handle delete
   const handleDeleteSuccess = (id: string) => {
-    // This removes the counter with the matching ID from local state
+    // this removes the counter with the matching ID from local state
     setCounters((prev) => prev.filter((c) => c._id !== id));
 
     // add query logic and tags, and it will autmatically refresh
@@ -91,7 +91,7 @@ const Data = () => {
 
 
 // handle reset success
-// TODO: update mutations/queries, so that auto refresh goes on
+// TODO: update mutations/queries
 const handleResetSuccess = () => {
     window.location.reload();
 }

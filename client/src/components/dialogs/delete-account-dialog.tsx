@@ -1,12 +1,10 @@
 import { useDeleteUserAccountMutation } from "../../slices/users-api-slice"
 import { toast } from "sonner"
 import { SpinnerButton } from "../buttons/spinner-button"
-import { useSelector } from "react-redux"
 
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,

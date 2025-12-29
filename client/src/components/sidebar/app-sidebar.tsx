@@ -4,9 +4,6 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
-  LifeBuoy,
-  Map,
-  PieChart,
   Send,
   Settings2,
   SquareTerminal,
@@ -14,12 +11,10 @@ import {
   Tally5,
   Warehouse,
   Settings,
-  Eye,
   Github
 } from "lucide-react"
 
 
-import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavSecondary } from "./nav-secondary"
 import { NavUser } from "./nav-user"
