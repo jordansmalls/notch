@@ -13,7 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "../components/ui/sidebar"
-import { Check, Copy, Terminal, Info, Globe } from "lucide-react"
+import { Check, Copy, Terminal, Globe } from "lucide-react"
 import { useState } from "react"
 import { Button } from "../components/ui/button"
 import { cn } from "@/lib/utils"
@@ -60,7 +60,6 @@ const CodeBlock = ({ code, label, variant = "default" }: { code: string; label?:
 
 const Docs = () => {
   const SAMPLE_KEY = "notch_pub_b6sUE5TnWYTKMJJnt4cQRtZYXk4NjQtW"
-  // const BASE_URL = "http://localhost:4000"
   const BASE_URL= "https://notch.up.railway.app"
 
   return (

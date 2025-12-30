@@ -3,15 +3,13 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "../../components/ui/spinner";
 
-// TODO: update URL for redirction to landing page
-
 const Home = () => {
     const { userInfo } = useSelector((state) => state.auth);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!userInfo) {
-            window.location.href = "https://letterboxd.com/film/interstellar/";
+            window.location.href = "https://notchlanding.netlify.app";
         } else {
             const timer = setTimeout(() => {
                 navigate("/dashboard");
