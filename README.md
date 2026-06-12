@@ -1,4 +1,4 @@
-# Notch
+<img src="https://i.ibb.co/wFqd3nv9/notch.gif" alt="notch - the easiest click counter service for developers.">
 
 A click counter service where authenticated users create counters, share public increment/read endpoints, and view personal + global usage statistics.
 
