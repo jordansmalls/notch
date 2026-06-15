@@ -232,7 +232,7 @@ cd server
 pnpm format
 ```
 
-> ℹ️ If you add a test framework, install it as a dev dependency in the relevant package and surface the command in this section.
+> ℹ️ If you add a test framework, install it as a dev dependency in the relevant package and surface the command in this section, in a PR.
 
 ---
 
