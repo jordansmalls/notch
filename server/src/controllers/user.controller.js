@@ -153,9 +153,11 @@ export const loginUserAccount = async (req, res) => {
 
 export const logoutUserAccount = (req, res) => {
   try {
-    res.cookie("jwt", "", {
+    res.clearCookie("jwt", {
       httpOnly: true,
-      expires: new Date(0),
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      path: "/",
     });
     return res
       .status(200)
@@ -201,7 +203,12 @@ export const deactivateUserAccount = async (req, res) => {
     }
 
     // Clear the cookie on the server side
-    res.clearCookie("jwt");
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      path: "/",
+    });
 
     return res
       .status(200)

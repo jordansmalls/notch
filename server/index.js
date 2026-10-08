@@ -3,6 +3,7 @@ import config from "./src/config/config.js";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import compression from "compression";
 import users from "./src/routes/user.routes.js";
 import counters from "./src/routes/counter.routes.js"
@@ -15,10 +16,14 @@ const app = express();
 app.use(morgan(config.node_env === "production" ? "combined" : "dev"));
 app.use(compression());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(helmet());
 app.use(cookieParser());
 app.use(cors(config.cors_options))
-// TODO: will need this in prod with hosting on railway
-// app.set("trust proxy", 1)
+// When running behind a proxy (e.g. Railway), trust the first proxy
+if (config.node_env === "production") {
+	app.set("trust proxy", 1);
+}
 
 
 app.use("/api/users", users);
