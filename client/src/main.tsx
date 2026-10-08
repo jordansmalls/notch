@@ -2,20 +2,18 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client"
 import App from "./App.tsx";
 import "./index.css"
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from "react-router-dom"
 import store from "./store.ts"
 import { Provider } from "react-redux"
 
 
 
-import Home from "./pages/def/home.tsx";
 import Login from "./pages/auth/login.tsx";
 import Signup from "./pages/auth/signup.tsx";
 import NotFound from "./pages/def/not-found.tsx";
 import Dashboard from "./pages/dashboard.tsx";
 import Settings from "./pages/settings.tsx";
 import PrivateRoute from "./components/private-route.tsx";
-import Docs from "./pages/docs.tsx";
 import CreateCounter from "./pages/counters/create-counter.tsx";
 
 
@@ -23,14 +21,14 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="*" element={<NotFound />} />
-      <Route index={true} path="/" element={<Home />} />
+      {/* logged-out visitors get sent on to /login by PrivateRoute */}
+      <Route index={true} path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
 
       <Route path="" element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/docs" element={<Docs />} />
         <Route path="/create-counter" element={<CreateCounter />} />
 
       </Route>

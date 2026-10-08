@@ -156,7 +156,7 @@ export const logoutUserAccount = (req, res) => {
     res.clearCookie("jwt", {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: "lax",
       path: "/",
     });
     return res
@@ -206,7 +206,7 @@ export const deactivateUserAccount = async (req, res) => {
     res.clearCookie("jwt", {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: "lax",
       path: "/",
     });
 

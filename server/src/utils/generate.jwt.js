@@ -16,8 +16,8 @@ const generateToken = (res, userId) => {
     httpOnly: true,
     // use secure cookies in production
     secure: process.env.NODE_ENV !== "development",
-    // allow cross-site cookies in production (Netlify -> Railway)
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    // app.trynotch.cc and api.trynotch.cc are the same site, so lax keeps the cookie off requests started by other sites
+    sameSite: "lax",
     path: "/",
     // 30 days
     maxAge: 30 * 24 * 60 * 60 * 1000,

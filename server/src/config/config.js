@@ -3,10 +3,7 @@ dotenv.config();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "http://localhost:3000",
-  "https://gonotch.netlify.app",
-  "https://jsmalls.net",
-  "https://admin.jsmalls.net",
+  "https://app.trynotch.cc",
 ];
 
 // public counter + global stats endpoints are open to any site; no cookies involved
@@ -18,7 +15,7 @@ const publicCorsOptions = {
   allowedHeaders: ["Content-Type"],
 };
 
-// account + dashboard endpoints use cookies, so they stay limited to known frontends
+// account + dashboard endpoints use cookies, so they stay limited to the notch app
 const privateCorsOptions = {
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps or curl)

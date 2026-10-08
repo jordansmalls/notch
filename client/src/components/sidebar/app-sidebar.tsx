@@ -146,7 +146,7 @@ const data = {
     },
     {
       name: "Documentation",
-      url: "/docs",
+      url: "https://trynotch.cc/docs",
       icon: BookOpen,
     },
     {
