@@ -1,50 +1,26 @@
-import { AppSidebar } from "../components/sidebar/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "../components/ui/breadcrumb"
-import { Separator } from "../components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "../components/ui/sidebar"
-
-
-import Data from "../components/dashboard-ui/data";
-
+import { skipToken } from "@reduxjs/toolkit/query/react"
+import { useSelector } from "react-redux"
+import { useFetchUserCountersQuery } from "@/slices/counters-api-slice"
+import type { RootState } from "@/store"
+import { AppLayout } from "../components/app-layout"
+import Data from "../components/dashboard-ui/data"
+import LoadingPage from "./loading"
 
 const Dashboard = () => {
-    return (
-        <>
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-            <div className="mt-[12rem]">
-              <Data />
-            </div>
-            </SidebarInset>
-        </SidebarProvider>
-        </>
-     );
+  const { userInfo } = useSelector((state: RootState) => state.auth)
+  const { data, isLoading, isError } = useFetchUserCountersQuery(userInfo?._id ?? skipToken)
+
+  return (
+    <>
+      {isLoading ? (
+        <LoadingPage />
+      ) : (
+        <AppLayout breadcrumbs={[{ label: "Dashboard" }]}>
+          <Data counters={data?.counters ?? []} isError={isError} />
+        </AppLayout>
+      )}
+    </>
+  )
 }
 
-export default Dashboard;
+export default Dashboard

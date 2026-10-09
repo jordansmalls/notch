@@ -2,6 +2,7 @@ import Counter from "../models/counter.model.js";
 import User from "../models/user.model.js"
 import { generatePublicApiKey } from "../utils/generate.public.key.js"
 import { trackGlobalClicks, trackGlobalCounters } from "../utils/global.utils.js";
+import { trackUserRequest } from "../utils/usage.utils.js";
 
 // PRIVATE ROUTES
 
@@ -22,12 +23,15 @@ export const createCounter = async (req, res) => {
             return res.status(404).json({ message: "User not found." })
         }
 
+        name = typeof name === "string" ? name.trim() : "";
+        description = typeof description === "string" ? description.trim() : "";
+
         if(!name) {
-            return res.status(400).json({ message: "Invalid credentials (name missing). "})
+            return res.status(400).json({ message: "Counters need a name." })
         }
 
-        if(description === null) {
-            description = "";
+        if(!description) {
+            return res.status(400).json({ message: "Counters need a description." })
         }
 
         let key = await generatePublicApiKey();
@@ -48,6 +52,10 @@ export const createCounter = async (req, res) => {
             return res.status(201).json({ counter: counter, message: "Counter created successfully." })
         }
     } catch (err) {
+       // surface schema limits (name length, description length) instead of a generic error
+       if (err.name === "ValidationError") {
+           return res.status(400).json({ message: Object.values(err.errors)[0].message })
+       }
        console.error("There was an error creating a counter:", err);
        return res.status(500).json({ message: "We're having trouble, please try again soon." })
     }
@@ -162,7 +170,7 @@ export const fetchUserCounters = async (req, res) => {
  * @access  PRIVATE
  */
 export const updateCounter = async (req, res) => {
-  const { id, name, description } = req.body;
+  const { id, name, description, count, createdAt } = req.body;
 
   try {
     if (!id || !name || description === undefined) {
@@ -183,8 +191,23 @@ export const updateCounter = async (req, res) => {
         .json({ message: "You do not have authorization to update this counter." });
     }
 
+    if (count !== undefined && (!Number.isSafeInteger(count) || count < 0)) {
+      return res.status(400).json({ message: "Count must be a non-negative whole number within the safe integer range." });
+    }
+
+    let date;
+    if (createdAt !== undefined) {
+      date = typeof createdAt === "string" && createdAt.trim() ? new Date(createdAt) : null;
+      if (!date || Number.isNaN(date.getTime())) {
+        return res.status(400).json({ message: "Please provide a valid creation date." });
+      }
+    }
+
     counter.name = name;
     counter.description = description;
+    if (count !== undefined) counter.count = count;
+    // Creation timestamps are immutable by default; allow this explicit owner edit.
+    if (date) counter.set("createdAt", date, { overwriteImmutable: true });
 
     const updatedCounter = await counter.save();
 
@@ -200,6 +223,9 @@ export const updateCounter = async (req, res) => {
       },
     });
   } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({ message: Object.values(err.errors)[0].message });
+    }
     console.error("There was an error attempting to update a counter:", err);
     return res
       .status(500)
@@ -300,8 +326,9 @@ export const incrementCount = async (req, res) => {
         if(!updatedCounter) {
             return res.status(500).json({ message: "We're having trouble, please try again later." })
         } else {
-            // update global count of clicks
+            // update global count of clicks and the owner's monthly usage
             trackGlobalClicks();
+            trackUserRequest(updatedCounter.user_id);
             return res.status(200).json({ message: "Success", count: updatedCounter.count })
         }
     } catch (err) {

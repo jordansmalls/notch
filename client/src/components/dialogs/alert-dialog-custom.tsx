@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -23,7 +22,8 @@ interface AlertDialogCustomProps {
   actionConfirm: string;
   actionLoadingText?: string;
   loading: boolean;
-  onConfirm: () => void;
+  destructive?: boolean;
+  onConfirm: () => void | Promise<void>;
 }
 
 const AlertDialogCustom = ({
@@ -34,10 +34,13 @@ const AlertDialogCustom = ({
   actionConfirm,
   actionLoadingText = "Processing...",
   loading,
+  destructive = false,
   onConfirm
 }: AlertDialogCustomProps) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         {trigger}
       </AlertDialogTrigger>
@@ -51,18 +54,19 @@ const AlertDialogCustom = ({
             {actionCancel}
           </AlertDialogCancel>
 
-          <AlertDialogAction asChild>
-            <SpinnerButton
-              onClick={(e) => {
-                e.preventDefault();
-                onConfirm();
-              }}
-              loadingText={actionLoadingText}
-              isLoading={loading}
-            >
-              {actionConfirm}
-            </SpinnerButton>
-          </AlertDialogAction>
+          {/* a plain button rather than AlertDialogAction, which closes immediately and overrides the variant */}
+          <SpinnerButton
+            onClick={async () => {
+              // keep the dialog open while the action runs, then close it
+              await onConfirm();
+              setOpen(false);
+            }}
+            loadingText={actionLoadingText}
+            isLoading={loading}
+            variant={destructive ? "destructive" : "default"}
+          >
+            {actionConfirm}
+          </SpinnerButton>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

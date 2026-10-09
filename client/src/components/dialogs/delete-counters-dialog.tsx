@@ -1,50 +1,41 @@
 import { toast } from "sonner"
-import { useDeleteAllCountersMutation } from "../../slices/counters-api-slice"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { getErrorMessage } from "@/lib/utils"
+import { useDeleteAllCountersMutation } from "../../slices/counters-api-slice"
+import AlertDialogCustom from "./alert-dialog-custom"
 
-export function DeleteCountersDialog() {
+const pluralize = (count: number) => `${count} ${count === 1 ? "counter" : "counters"}`
 
+export function DeleteCountersDialog({ count }: { count: number | undefined }) {
   const [deleteCounters, { isLoading }] = useDeleteAllCountersMutation()
 
-  const handleSubmit = async () => {
+  const handleConfirm = async () => {
     try {
-      await deleteCounters().unwrap()
-      toast.success("Success!", { description: "All of your counters have successfully been deleted." })
+      const res = await deleteCounters().unwrap()
+      toast.success("Counters deleted.", { description: `Removed ${pluralize(res.deletedCount)}.` })
     } catch (err) {
-      console.error("Counter deletion error:", err);
-      toast.error("We had trouble deleting your counters, please try again.")
+      toast.error("Oops! Something went wrong.", {
+        description: getErrorMessage(err, "We couldn't delete your counters. Try again."),
+      })
     }
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="secondary">Delete Counters</Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            All of your counters will be permanently deleted and this action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSubmit}>Confirm</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <AlertDialogCustom
+      title="Delete all counters?"
+      description={`This permanently deletes ${count === undefined ? "all of your counters" : `your ${pluralize(count)}`} and their public keys. Sites using those keys will stop counting. This can't be undone.`}
+      actionCancel="Cancel"
+      actionConfirm="Delete counters"
+      actionLoadingText="Deleting…"
+      loading={isLoading}
+      destructive
+      onConfirm={handleConfirm}
+      trigger={
+        <Button variant="outline" disabled={count === 0}>
+          Delete counters
+        </Button>
+      }
+    />
   )
 }

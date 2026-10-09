@@ -6,6 +6,15 @@ import { API_BASE_URL } from '../utils/api-config';
 // const USERS = `${API_BASE_URL}/users`
 const COUNTERS = "/counters"
 
+export interface Counter {
+    _id: string;
+    name: string;
+    description: string;
+    count: number;
+    public_key: string;
+    createdAt: string;
+}
+
 
 export const userApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -14,20 +23,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 url: `${COUNTERS}`,
                 method: "POST",
                 body: data
-            })
+            }),
+            invalidatesTags: ["Counters"],
         }),
-        fetchUserCounters: builder.mutation({
-            query: (data) => ({
+        // keyed by the signed-in user's id so one account never sees another's cached counters
+        fetchUserCounters: builder.query<{ counters: Counter[] }, string>({
+            query: () => ({
                 url: `${COUNTERS}`,
                 method: "GET",
-                body: data,
-            })
+            }),
+            providesTags: ["Counters"],
         }),
         deleteCounter: builder.mutation({
             query: (id) => ({
                 url: `${COUNTERS}/${id}`,
                 method: "DELETE",
-            })
+            }),
+            invalidatesTags: ["Counters"],
         }),
         updateCounter: builder.mutation({
             query: (data) => ({
@@ -41,7 +53,8 @@ export const userApiSlice = apiSlice.injectEndpoints({
             query: (id) => ({
                 url: `${COUNTERS}/${id}/reset`,
                 method: "POST"
-            })
+            }),
+            invalidatesTags: ["Counters"],
         }),
         fetchCurrentCount: builder.mutation({
             query: (public_key) => ({
@@ -55,7 +68,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
             })
         }),
-        deleteAllCounters: builder.mutation({
+        deleteAllCounters: builder.mutation<{ message: string; deletedCount: number }, void>({
             query: () => ({
             url: `${COUNTERS}`,
             method: "DELETE",
@@ -68,7 +81,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
 
 export const {
     useCreateCounterMutation,
-    useFetchUserCountersMutation,
+    useFetchUserCountersQuery,
     useDeleteCounterMutation,
     useResetCounterMutation,
     useFetchCurrentCountMutation,

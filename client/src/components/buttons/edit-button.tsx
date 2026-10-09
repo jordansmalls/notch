@@ -1,4 +1,5 @@
-import { GripVertical } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { EditCounterDialog } from "../dialogs/edit-counter-dialog";
 import { toast } from "sonner";
 import { useUpdateCounterMutation } from "../../slices/counters-api-slice";
@@ -15,10 +16,9 @@ interface EditButtonProps {
   _id: string;
   counterName: string;
   counterDescription: string;
-  onSuccess: (id: string, name: string, description: string) => void;
 }
 
-const EditButton = ({ _id, counterName, counterDescription, onSuccess }: EditButtonProps) => {
+const EditButton = ({ _id, counterName, counterDescription }: EditButtonProps) => {
   const [updateCounter, { isLoading }] = useUpdateCounterMutation();
 
  const handleUpdateCounter = async (formData: { name: string; description: string }) => {
@@ -31,9 +31,6 @@ const EditButton = ({ _id, counterName, counterDescription, onSuccess }: EditBut
     toast.success("Success!", {
       description: `${formData.name} has been updated.`,
     });
-
-    onSuccess(_id, formData.name, formData.description);
-
   } catch (err: any) {
     toast.error("Error", {
       description: err?.data?.message || "Failed to update counter.",
@@ -55,7 +52,7 @@ const EditButton = ({ _id, counterName, counterDescription, onSuccess }: EditBut
                 <button
 
                 aria-label="Edit counter">
-                <GripVertical className="h-4 w-4" />
+                <HugeiconsIcon icon={PencilEdit02Icon} className="h-4 w-4" />
                 </button>
             }
         />

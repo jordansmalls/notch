@@ -1,6 +1,9 @@
 import User from "../models/user.model.js";
 import generateToken from "../utils/generate.jwt.js";
 import { trackNewUser } from "../utils/global.utils.js"
+import Usage from "../models/usage.model.js";
+import Counter from "../models/counter.model.js";
+import { currentMonth } from "../utils/usage.utils.js";
 
 /**
  * @desc    Create user account
@@ -266,6 +269,26 @@ export const fetchUserAccount = async (req, res) => {
 };
 
 /**
+ * @desc    Fetch the requests served for a user's counters this month
+ * @route   GET /api/users/usage
+ * @access  PRIVATE
+ */
+
+export const fetchUserUsage = async (req, res) => {
+  try {
+    const month = currentMonth();
+    const usage = await Usage.findOne({ user_id: req.user._id, month }).lean();
+
+    return res.status(200).json({ month, requests: usage?.requests ?? 0 });
+  } catch (err) {
+    console.error("There was an error fetching a user's usage:", err);
+    return res
+      .status(500)
+      .json({ message: "We're having trouble fetching your usage, please try again later." });
+  }
+};
+
+/**
  * @desc    Change user account password
  * @route   PUT /api/users
  * @access  PRIVATE
@@ -346,6 +369,17 @@ export const deleteUserAccount = async (req, res) => {
     if(!deletedUser) {
       return res.status(404).json({ message: "User not found." })
     }
+
+    // remove everything tied to the account; deleted counters' public keys stop working
+    await Counter.deleteMany({ user_id: id });
+    await Usage.deleteMany({ user_id: id });
+
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "lax",
+      path: "/",
+    });
 
     return res.status(200).json({ message: "Account deletion successful. Please come back soon." })
 

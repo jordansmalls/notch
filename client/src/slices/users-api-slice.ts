@@ -45,7 +45,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
-        changeUserPassword: builder.mutation({
+        changeUserPassword: builder.mutation<{ message: string }, { currentPassword: string; newPassword: string }>({
             query: (data) => ({
                 url: `${USERS}`,
                 method: "PUT",
@@ -59,19 +59,26 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        // keyed by the signed-in user's id, like the counters list
+        fetchUsage: builder.query<{ month: string; requests: number }, string>({
+            query: () => ({
+                url: `${USERS}/usage`,
+                method: "GET",
+            }),
+        }),
         checkEmailAvailability: builder.mutation({
             query: (email) => ({
                 url: `${USERS}/check-email/${email}`,
                 method: "GET",
             }),
         }),
-        deleteUserAccount: builder.mutation({
+        deleteUserAccount: builder.mutation<{ message: string }, void>({
             query: () => ({
                 url: `${USERS}`,
                 method: "DELETE"
             }),
             invalidatesTags: ['User'],
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
                 try {
                     await queryFulfilled;
                     dispatch(logout())
@@ -91,5 +98,6 @@ export const {
     useDeactivateUserAccountMutation,
     useCheckEmailAvailabilityMutation,
     useFetchUserAccountMutation,
+    useFetchUsageQuery,
     useDeleteUserAccountMutation,
 } = userApiSlice;

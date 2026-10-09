@@ -1,4 +1,5 @@
-import { RotateCcw } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { RotateLeft01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { useResetCounterMutation } from "../../slices/counters-api-slice";
 import { Button } from "../ui/button";
@@ -13,10 +14,9 @@ import AlertDialogCustom from "../dialogs/alert-dialog-custom";
 interface ResetButtonProps {
   _id: string;
   counterName?: string;
-  onSuccess: (id: string) => void;
 }
 
-const ResetButton = ({ _id, counterName, onSuccess }: ResetButtonProps) => {
+const ResetButton = ({ _id, counterName }: ResetButtonProps) => {
   const [resetCounter, { isLoading }] = useResetCounterMutation();
 
   const handleResetCounter = async () => {
@@ -27,11 +27,6 @@ const ResetButton = ({ _id, counterName, onSuccess }: ResetButtonProps) => {
       toast.success("Counter successfully reset.", {
         description: `${counterName || "Counter"} has been set back to zero.`,
       });
-
-      // Notify parent to refresh/reload
-      if (onSuccess) {
-        onSuccess(_id);
-      }
     } catch (err: any) {
       console.error("Reset Error:", err);
       toast.error("Oops!", {
@@ -61,7 +56,7 @@ const ResetButton = ({ _id, counterName, onSuccess }: ResetButtonProps) => {
                 disabled={isLoading}
                 aria-label="Reset counter"
               >
-                <RotateCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                <HugeiconsIcon icon={RotateLeft01Icon} className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
               </Button>
             </TooltipTrigger>
           }

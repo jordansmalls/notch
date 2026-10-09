@@ -1,5 +1,6 @@
 import { Button } from "../ui/button";
-import { Copy } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import {
   Tooltip,
@@ -39,8 +40,9 @@ const CopyButton = ({ counterName, counterPublicKey }: CopyButtonProps) => {
             variant="outline"
             size="icon"
             onClick={() => copyToClipboard(counterPublicKey)}
+            aria-label="Copy public key"
           >
-            <Copy className="w-4 h-4" />
+            <HugeiconsIcon icon={Copy01Icon} className="w-4 h-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>

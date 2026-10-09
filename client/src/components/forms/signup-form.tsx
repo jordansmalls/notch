@@ -1,204 +1,141 @@
-import { Tally5 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "../ui/spinner"
+import { useEffect, useRef, useState, type FormEvent } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { setCredentials } from "../../slices/auth-slice"
-import { useSignupMutation, useCheckEmailAvailabilityMutation } from "../../slices/users-api-slice"
-import { SpinnerButton } from "../buttons/spinner-button"
 import { toast } from "sonner"
 
-export function SignupForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+import { Button } from "@/components/ui/button"
+import { Field, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { cn, getErrorMessage } from "@/lib/utils"
+import { setCredentials } from "@/slices/auth-slice"
+import { useCheckEmailAvailabilityMutation, useSignupMutation } from "@/slices/users-api-slice"
+import type { RootState } from "@/store"
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+// taken is null when the availability check itself failed
+type EmailCheck = { email: string; taken: boolean | null }
+
+export function SignupForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [emailCheck, setEmailCheck] = useState<EmailCheck | null>(null)
 
-    const [emailStatus, setEmailStatus] = useState<{
-    message: string | React.ReactNode;
-    isAvailable: boolean | null;
-}>({
-    message: "",
-    isAvailable: null,
-});
+  const emailRef = useRef<HTMLInputElement>(null)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const [signup, { isLoading: isSigningUp }] = useSignupMutation();
+  const [signup, { isLoading }] = useSignupMutation()
+  const [checkEmail] = useCheckEmailAvailabilityMutation()
 
-  const [checkEmail, { isLoading: isChecking }] = useCheckEmailAvailabilityMutation();
-
-
-  const { userInfo } = useSelector((state) => state.auth)
+  const { userInfo } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    if(userInfo) {
+    if (userInfo) {
       navigate("/dashboard")
     }
   }, [navigate, userInfo])
 
-
-
+  // debounce the availability check; ignore responses for emails that are no longer in the field
   useEffect(() => {
-    if(email.length < 7) {
-      setEmailStatus({
-        message: "please enter a valid email.",
-        isAvailable: null
-      });
-      return;
-    }
+    if (!EMAIL_PATTERN.test(email)) return
 
-    setEmailStatus(prev => ({
-      ...prev,
-      message: <div className="flex gap-2 items-center"><Spinner/>Checking availability</div>,
-      isAvailable: null
-    }));
-
-
-    const handler = setTimeout(() => {
-      const checkAvailability = async () => {
-        try {
-          const res = await checkEmail(email).unwrap();
-
-          if(res.taken) {
-            setEmailStatus({
-              message: "Email is taken, please try another.",
-              isAvailable: false,
-            });
-          } else {
-            setEmailStatus({
-              message: "Email is available!",
-              isAvailable: true
-            })
-          }
-
-        } catch (err) {
-          console.error("Availability check failed:", err)
-          setEmailStatus({
-            message: "Error checking email. Try again later.",
-            isAvailable: false
-          });
-        }
-      };
-      checkAvailability();
+    let ignore = false
+    const handler = setTimeout(async () => {
+      try {
+        const res = await checkEmail(email).unwrap()
+        if (!ignore) setEmailCheck({ email, taken: Boolean(res.taken) })
+      } catch {
+        if (!ignore) setEmailCheck({ email, taken: null })
+      }
     }, 500)
 
     return () => {
+      ignore = true
       clearTimeout(handler)
     }
   }, [email, checkEmail])
 
+  const isValidEmail = EMAIL_PATTERN.test(email)
+  const isChecking = isValidEmail && emailCheck?.email !== email
+  const isTaken = isValidEmail && emailCheck?.email === email && emailCheck.taken === true
+  const isAvailable = isValidEmail && emailCheck?.email === email && emailCheck.taken === false
 
-
-  // Submit Handler
-  const handleSignup = async (e) => {
+  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if(emailStatus.isAvailable !== true) {
-      toast.error("Oops!", { description: `${emailStatus.message || "Please check email availability first."}` })
-      return;
+    if (isTaken) {
+      toast.error("Oops! Something went wrong.", { description: "An account already uses this email." })
+      emailRef.current?.focus()
+      return
     }
 
     try {
-      const res = await signup({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res }));
+      const res = await signup({ email, password }).unwrap()
+      dispatch(setCredentials({ ...res }))
       toast.success("You're in.", { description: "We're glad you decided to join us, let's get started." })
       navigate("/dashboard")
     } catch (err) {
-     const errorMessage = err.data?.message || err.message || "Signup failed.";
-     console.error("Error with signup:", errorMessage)
-     toast.error("Oops!", { description: `${errorMessage}` })
+      toast.error("Oops! Something went wrong.", { description: getErrorMessage(err, "We couldn't create your account. Try again.") })
     }
-  };
-
-  const statusColor = emailStatus.isAvailable === true
-        ? 'text-green-600'
-        : emailStatus.isAvailable === false
-            ? 'text-red-600'
-            : isChecking
-                ? 'text-yellow-600'
-                : 'text-gray-500';
-
+  }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleSignup}>
-        <FieldGroup>
-          <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <Tally5 className="size-6" />
-              </div>
-              <span className="sr-only">notch.</span>
-            </a>
-            <h1 className="text-xl font-bold">create a notch account</h1>
-            <p>quickly create your account to begin tracking counts.</p>
+    <form onSubmit={handleSignup} className="flex flex-col gap-6">
+      <Field className="gap-2">
+        <FieldLabel htmlFor="email">Email</FieldLabel>
+        <Input
+          ref={emailRef}
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          aria-invalid={isTaken || undefined}
+          aria-describedby="email-status"
+          required
+        />
+        {/* stays mounted so screen readers announce changes; collapses the field gap while empty */}
+        <p
+          id="email-status"
+          aria-live="polite"
+          className={cn("text-xs empty:-mt-2", isTaken ? "text-destructive" : "text-muted-foreground")}
+        >
+          {isChecking && "Checking availability…"}
+          {isAvailable && "This email is available."}
+          {isTaken && (
+            <>
+              An account already uses this email.{" "}
+              <Link to="/login" className="underline underline-offset-4">
+                Log in instead
+              </Link>
+            </>
+          )}
+        </p>
+      </Field>
 
-          </div>
+      <Field className="gap-2">
+        <FieldLabel htmlFor="password">Password</FieldLabel>
+        <Input
+          id="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          aria-describedby="password-help"
+          required
+        />
+        <p id="password-help" className="text-muted-foreground text-xs">
+          Use at least 8 characters.
+        </p>
+      </Field>
 
-          {/* email input */}
-          <Field>
-            <FieldLabel htmlFor="email">email</FieldLabel>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            {/* Availability Status Feedback */}
-            <p className={`mt-1 text-sm ${statusColor}`}>
-              {isChecking ? (
-                <span className="flex items-center gap-2">
-                  <Spinner />
-                  Checking availability
-                </span>
-              ) : (
-                emailStatus.message
-              )}
-            </p>
-          </Field>
-
-
-
-          {/* password input */}
-          <Field>
-            <FieldLabel htmlFor="password">password</FieldLabel>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Password (min 8 characters)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Field>
-
-          {/* submit button */}
-          <Field>
-            <SpinnerButton isLoading={isSigningUp} loadingText="Please wait">Continue</SpinnerButton>
-          </Field>
-
-        </FieldGroup>
-      </form>
-      <FieldDescription className="text-center">
-              Already have an account? <Link to="/login" className="transition ease-in hover:text-primary duration-200">Login</Link>
-      </FieldDescription>
-    </div>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Creating account…" : "Create account"}
+      </Button>
+    </form>
   )
 }

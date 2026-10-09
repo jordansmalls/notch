@@ -1,4 +1,5 @@
-import { Trash } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { useDeleteCounterMutation } from "../../slices/counters-api-slice";
 import { Button } from "../ui/button";
@@ -13,10 +14,9 @@ import AlertDialogCustom from "../dialogs/alert-dialog-custom";
 interface DeleteButtonProps {
   id: string;
   counterName?: string;
-  onSuccess: (id: string) => void;
 }
 
-const DeleteButton = ({ id, counterName, onSuccess }: DeleteButtonProps) => {
+const DeleteButton = ({ id, counterName }: DeleteButtonProps) => {
   const [deleteCounter, { isLoading }] = useDeleteCounterMutation();
 
   const handleDeleteCounter = async () => {
@@ -25,7 +25,6 @@ const DeleteButton = ({ id, counterName, onSuccess }: DeleteButtonProps) => {
       toast.success("Deleted!", {
         description: `${counterName || "Counter"} has been removed.`,
       });
-      onSuccess(id)
     } catch (err: any) {
       console.error("Delete Error:", err);
       toast.error("Oops!", {
@@ -55,7 +54,7 @@ const DeleteButton = ({ id, counterName, onSuccess }: DeleteButtonProps) => {
                 disabled={isLoading}
                 aria-label="Delete counter"
               >
-                <Trash className="h-4 w-4" />
+                <HugeiconsIcon icon={Delete02Icon} className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
           }

@@ -1,113 +1,76 @@
-import { Tally5 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Link, useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { setCredentials } from "../../slices/auth-slice"
-import { useLoginMutation } from "../../slices/users-api-slice"
-import { SpinnerButton } from "../buttons/spinner-button"
+import { useEffect, useState, type FormEvent } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+import { Button } from "@/components/ui/button"
+import { Field, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { getErrorMessage } from "@/lib/utils"
+import { setCredentials } from "@/slices/auth-slice"
+import { useLoginMutation } from "@/slices/users-api-slice"
+import type { RootState } from "@/store"
 
+export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const [login, { isLoading }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation()
 
-  const { userInfo } = useSelector((state) => state.auth)
+  const { userInfo } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    if(userInfo) {
+    if (userInfo) {
       navigate("/dashboard")
     }
   }, [navigate, userInfo])
 
-  // login handler
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     try {
-
-      const res = await login({ email, password }).unwrap();
+      const res = await login({ email, password }).unwrap()
       dispatch(setCredentials({ ...res }))
-      toast.success("Logged in successfully.", { description: "Welcome back, let's get back to it." });
+      toast.success("Logged in successfully.", { description: "Welcome back, let's get back to it." })
       navigate("/dashboard")
     } catch (err) {
-      const errorMessage = err.data?.message || err.message || "Login failed. Check the console for error details.";
-      console.error("Login error:", errorMessage)
-      toast.error("Oops!", { description: `${errorMessage}` })
+      toast.error("Oops! Something went wrong.", { description: getErrorMessage(err, "We couldn't log you in. Try again.") })
     }
-  };
-
+  }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleLogin}>
-        <FieldGroup>
-          <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <Tally5 className="size-6" />
-              </div>
-              <span className="sr-only">notch.</span>
-            </a>
-            <h1 className="text-xl font-bold">login to notch</h1>
-            <p>enter your credentials and get back to it.</p>
+    <form onSubmit={handleLogin} className="flex flex-col gap-6">
+      <Field className="gap-2">
+        <FieldLabel htmlFor="email">Email</FieldLabel>
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+      </Field>
 
-          </div>
+      <Field className="gap-2">
+        <FieldLabel htmlFor="password">Password</FieldLabel>
+        <Input
+          id="password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </Field>
 
-          {/* email input */}
-          <Field>
-            <FieldLabel htmlFor="email">email</FieldLabel>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Field>
-          {/* password input */}
-          <Field>
-            <FieldLabel htmlFor="password">password</FieldLabel>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Field>
-
-          {/* submit button */}
-          <Field>
-            <SpinnerButton isLoading={isLoading} loadingText="Please wait">Continue</SpinnerButton>
-          </Field>
-
-        </FieldGroup>
-      </form>
-      <FieldDescription className="text-center">
-              Don&apos;t have an account? <Link to="/signup" className="transition ease-in hover:text-primary duration-200">Signup</Link>
-      </FieldDescription>
-    </div>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Logging in…" : "Log in"}
+      </Button>
+    </form>
   )
 }

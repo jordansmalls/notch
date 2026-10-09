@@ -6,6 +6,7 @@ import {
   logoutUserAccount,
   deactivateUserAccount,
   fetchUserAccount,
+  fetchUserUsage,
   changeAccountPassword,
   deleteUserAccount,
 } from "../controllers/user.controller.js";
@@ -55,6 +56,12 @@ router.post("/deactivate", lightLimiter, protect, deactivateUserAccount);
  * @access  PRIVATE
  */
 router.get("/me", lightLimiter, protect, fetchUserAccount);
+/**
+ * @desc    Fetch this month's request usage
+ * @route   GET /api/users/usage
+ * @access  PRIVATE
+ */
+router.get("/usage", lightLimiter, protect, fetchUserUsage);
 /**
  * @desc    Change user account password
  * @route   PUT /api/users

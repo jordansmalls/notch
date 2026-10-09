@@ -1,6 +1,8 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
 
 import {
   Collapsible,
@@ -25,7 +27,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon: LucideIcon
+    icon: IconSvgElement
     isActive?: boolean
     items?: {
       title: string
@@ -42,7 +44,7 @@ export function NavMain({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <a href={item.url}>
-                  <item.icon />
+                  <HugeiconsIcon icon={item.icon} />
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>
@@ -50,7 +52,7 @@ export function NavMain({
                 <>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuAction className="data-[state=open]:rotate-90">
-                      <ChevronRight />
+                      <HugeiconsIcon icon={ArrowRight01Icon} />
                       <span className="sr-only">Toggle</span>
                     </SidebarMenuAction>
                   </CollapsibleTrigger>

@@ -1,38 +1,23 @@
-"use client"
+import { Link, useLocation } from "react-router-dom"
+import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
 
-import {
-  Folder,
-  Share,
-  Trash2,
-  type LucideIcon,
-} from "lucide-react"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { CreateCounterDrawer } from "@/components/dialogs/create-counter-drawer"
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavProjects({
-  projects,
-}: {
-  projects: {
-    name: string
-    url: string
-    icon: LucideIcon
-  }[]
-}) {
-  const { isMobile } = useSidebar()
+// an item either links to a page or opens the create counter drawer
+export type NavProject = { name: string; icon: IconSvgElement } & (
+  | { url: string }
+  | { createsCounter: true }
+)
+
+export function NavProjects({ projects }: { projects: NavProject[] }) {
+  const { pathname } = useLocation()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -40,47 +25,25 @@ export function NavProjects({
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                {/* <SidebarMenuAction showOnHover> */}
-                  {/* <MoreHorizontal /> */}
-                  {/* <span className="sr-only">More</span> */}
-                {/* </SidebarMenuAction> */}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {"url" in item ? (
+              <SidebarMenuButton asChild isActive={pathname === item.url}>
+                <Link to={item.url}>
+                  <HugeiconsIcon icon={item.icon} />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            ) : (
+              <CreateCounterDrawer
+                trigger={
+                  <SidebarMenuButton>
+                    <HugeiconsIcon icon={item.icon} />
+                    <span>{item.name}</span>
+                  </SidebarMenuButton>
+                }
+              />
+            )}
           </SidebarMenuItem>
         ))}
-        {/* <SidebarMenuItem>
-          <SidebarMenuButton>
-            <MoreHorizontal />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem> */}
       </SidebarMenu>
     </SidebarGroup>
   )
