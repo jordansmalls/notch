@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import { useSelector } from "react-redux"
-import { skipToken } from "@reduxjs/toolkit/query/react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Delete02Icon, LockPasswordIcon, UserCircleIcon } from "@hugeicons/core-free-icons"
 
@@ -9,7 +8,7 @@ import { ChangePasswordForm } from "@/components/forms/change-password-form"
 import { DeleteAccountDialog } from "@/components/dialogs/delete-account-dialog"
 import { DeleteCountersDialog } from "@/components/dialogs/delete-counters-dialog"
 import { cn } from "@/lib/utils"
-import { useFetchUserCountersQuery } from "@/slices/counters-api-slice"
+import { useCounters } from "@/hooks/use-counters"
 import type { RootState } from "@/store"
 
 function SettingsSection({
@@ -48,8 +47,8 @@ const formatDate = (dateString: string) =>
 
 export default function Settings() {
   const { userInfo } = useSelector((state: RootState) => state.auth)
-  const { data } = useFetchUserCountersQuery(userInfo?._id ?? skipToken)
-  const counterCount = data?.counters.length
+  const { counters, hasData, hasPendingChanges } = useCounters()
+  const counterCount = hasData ? counters.length : undefined
 
   return (
     <AppLayout breadcrumbs={[{ label: "Dashboard", to: "/dashboard" }, { label: "Settings" }]}>
@@ -90,7 +89,7 @@ export default function Settings() {
                       : "Remove every counter and its public key. Keep your account."}
                   </p>
                 </div>
-                <DeleteCountersDialog count={counterCount} />
+                <DeleteCountersDialog count={counterCount} disabled={hasPendingChanges} />
               </div>
               <div className="flex flex-col items-start gap-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <div className="max-w-md">

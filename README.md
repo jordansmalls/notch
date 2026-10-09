@@ -228,19 +228,21 @@ All routes are mounted under `/api` on `https://api.trynotch.cc`. Protected rout
 
 ## 🧪 Testing & Quality
 
-No automated test suite is currently included in the repository. Recommended quality commands that **are** available:
+The client uses Vitest to test optimistic counter updates, rollback, concurrent requests, and recovery after failed refreshes.
 
 ```bash
-# Lint the client (TypeScript + React)
+# Check the client
 cd client
+pnpm test
 pnpm lint
+pnpm build
 
 # Format the server with Prettier
 cd server
 pnpm format
 ```
 
-> ℹ️ If you add a test framework, install it as a dev dependency in the relevant package and surface the command in this section.
+Counter edits, resets, and individual deletes appear immediately when the client has loaded the counter and is online. Pending changes remain separate from server data so older reads cannot overwrite them. Failed writes roll back only their own change, then refresh the list. Confirmed changes remain visible if that refresh fails, with a retry button on the dashboard. Requests time out after 15 seconds and writes are never retried automatically. Creation, bulk deletion, and account actions wait for server confirmation.
 
 ---
 
@@ -259,4 +261,3 @@ The server applies layered `express-rate-limit` middlewares (defined in `server/
 JWTs are stored in HTTP-only cookies with `SameSite=Lax` and a 30-day expiry; cookies are flagged `secure` outside of development. The app and API share the `trynotch.cc` site, so the cookie is never sent on requests started by other sites.
 
 ---
-

@@ -7,7 +7,7 @@ import AlertDialogCustom from "./alert-dialog-custom"
 
 const pluralize = (count: number) => `${count} ${count === 1 ? "counter" : "counters"}`
 
-export function DeleteCountersDialog({ count }: { count: number | undefined }) {
+export function DeleteCountersDialog({ count, disabled = false }: { count: number | undefined; disabled?: boolean }) {
   const [deleteCounters, { isLoading }] = useDeleteAllCountersMutation()
 
   const handleConfirm = async () => {
@@ -32,7 +32,7 @@ export function DeleteCountersDialog({ count }: { count: number | undefined }) {
       destructive
       onConfirm={handleConfirm}
       trigger={
-        <Button variant="outline" disabled={count === 0}>
+        <Button variant="outline" disabled={count === 0 || disabled || isLoading}>
           Delete counters
         </Button>
       }

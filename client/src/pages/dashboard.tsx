@@ -1,14 +1,10 @@
-import { skipToken } from "@reduxjs/toolkit/query/react"
-import { useSelector } from "react-redux"
-import { useFetchUserCountersQuery } from "@/slices/counters-api-slice"
-import type { RootState } from "@/store"
+import { useCounters } from "@/hooks/use-counters"
 import { AppLayout } from "../components/app-layout"
 import Data from "../components/dashboard-ui/data"
 import LoadingPage from "./loading"
 
 const Dashboard = () => {
-  const { userInfo } = useSelector((state: RootState) => state.auth)
-  const { data, isLoading, isError } = useFetchUserCountersQuery(userInfo?._id ?? skipToken)
+  const { counters, hasData, isLoading, isError, isFetching, refetch } = useCounters()
 
   return (
     <>
@@ -16,7 +12,7 @@ const Dashboard = () => {
         <LoadingPage />
       ) : (
         <AppLayout breadcrumbs={[{ label: "Dashboard" }]}>
-          <Data counters={data?.counters ?? []} isError={isError} />
+          <Data counters={counters} hasData={hasData} isError={isError} isFetching={isFetching} onRetry={() => void refetch()} />
         </AppLayout>
       )}
     </>
